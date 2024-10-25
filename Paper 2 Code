@@ -13,12 +13,18 @@ print(f"Highest Rent: {data.Rent.max()}")
 print(f"Lowest Rent: {data.Rent.min()}")
 
 #splitting data 
+from sklearn.model_selection import train_test_split
+x = np.array(data[["BHK", "Size", "Area Type", "City", "Furnishing Status", "Tenant Preferred", "Bathroom"]])
+y = np.array(data[["Rent"]])
+xtrain, xtest, ytrain, ytest = train_test_split(x, y, test_size = 0.10, random_state = 42)
+print("Enter House Details to Predict Rent")
 
-a = 
-b = 
-c = 
-d = 
-e =
-f = 
-g = 
-features = np.array
+a = int(input("Number of BHK: "))
+b = int(input("Size of the House: "))
+c = int(input("Area Type (Super Area = 1, Carpet Area = 2, Built Area = 3): "))
+d = int(input("Pin Code of the City: "))
+e = int(input("Furnishing Status of the House (Unfurnished = 0, Semi-Furnished = 1, Furnished = 2): "))
+f = int(input("Tenant Type (Bachelors = 1, Bachelors/Family = 2, Only Family = 3): "))
+g = int(input("Number of bathrooms: "))
+features = np.array([[a,b,c,d,e,f,g]])
+print("Predicted House Price: ", model.predict(features))
