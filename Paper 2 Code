@@ -1,0 +1,24 @@
+import pandas as pd 
+import numpy as np 
+import matplotlib.pyplot as plt
+import plotly.express as px
+import plotly.graph_objects as go
+
+data = pd.read_csv("House_Rent_Dataset.csv")
+print(data.head())
+
+print(f"Mean Rent: {data.Rent.mean()}")
+print(f"Median Rent: {data.Rent.median()}")
+print(f"Highest Rent: {data.Rent.max()}")
+print(f"Lowest Rent: {data.Rent.min()}")
+
+#splitting data 
+
+a = 
+b = 
+c = 
+d = 
+e =
+f = 
+g = 
+features = np.array
