@@ -1,33 +1,55 @@
-import pandas as pd 
-import numpy as np 
+# Import necessary libraries
+import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
-import plotly.express as px
-import plotly.graph_objects as go
-
-data = pd.read_csv("House_Rent_Dataset.csv")
-print(data.head())
-
-print(f"Mean Rent: {data.Rent.mean()}")
-print(f"Median Rent: {data.Rent.median()}")
-print(f"Highest Rent: {data.Rent.max()}")
-print(f"Lowest Rent: {data.Rent.min()}")
-
-#splitting data 
 from sklearn.model_selection import train_test_split
-x = np.array(data[["BHK", "Size", "Area Type", "City", "Furnishing Status", "Tenant Preferred", "Bathroom"]])
-y = np.array(data[["Rent"]])
-xtrain, xtest, ytrain, ytest = train_test_split(x, y, test_size = 0.10, random_state = 42)
-print("Enter House Details to Predict Rent")
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error
 
-a = int(input("Number of BHK: "))
-b = int(input("Size of the House: "))
-c = int(input("Area Type (Super Area = 1, Carpet Area = 2, Built Area = 3): "))
-d = int(input("Pin Code of the City: "))
-e = int(input("Furnishing Status of the House (Unfurnished = 0, Semi-Furnished = 1, Furnished = 2): "))
-f = int(input("Tenant Type (Bachelors = 1, Bachelors/Family = 2, Only Family = 3): "))
-g = int(input("Number of bathrooms: "))
-features = np.array([[a,b,c,d,e,f,g]])
-print("Predicted House Price: ", model.predict(features))
+# Load the dataset
+data = pd.read_csv("USA_Housing.csv")
+print(data.head())
+print(data.columns)  # Print column names to verify
+
+# Display basic stats for the target variable
+if 'Price' in data.columns:
+    print(f"Mean Price: {data['Price'].mean()}")
+    print(f"Median Price: {data['Price'].median()}")
+    print(f"Highest Price: {data['Price'].max()}")
+    print(f"Lowest Price: {data['Price'].min()}")
+else:
+    print("The dataset does not contain the 'Price' column.")
+
+# Define features (X) and target (y)
+# Dropping 'Address' as it is likely non-numeric
+X = data[["Avg. Area Income", "Avg. Area House Age", "Avg. Area Number of Rooms", "Avg. Area Number of Bedrooms", "Area Population"]]
+y = data["Price"]
+
+# Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.10, random_state=42)
+
+# Create and train the model
+model = RandomForestRegressor(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# Evaluate the model
+y_pred = model.predict(X_test)
+print("Mean Absolute Error on Test Set: ", mean_absolute_error(y_test, y_pred))
+
+# User input for predictions
+print("Enter House Details to Predict Price")
+a = float(input("Avg. Area Income: "))
+b = float(input("Avg. Area House Age: "))
+c = float(input("Avg. Area Number of Rooms: "))
+d = float(input("Avg. Area Number of Bedrooms: "))
+e = float(input("Area Population: "))
+
+# Prepare input for prediction
+features = pd.DataFrame([[a, b, c, d, e]], columns=["Avg. Area Income", "Avg. Area House Age", "Avg. Area Number of Rooms", "Avg. Area Number of Bedrooms", "Area Population"])
+
+# Predict and display the result
+predicted_price = model.predict(features)[0]
+print("Predicted House Price: ", predicted_price)
 
     
         
