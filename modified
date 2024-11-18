@@ -1,0 +1,68 @@
+#Import the neccessary libraries to use neural network model
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.optimizers import Adam
+
+# Loading the dataset
+data = pd.read_csv("USA_Housing.csv")
+print(data.head())
+print(data.columns)  # Print column names to verify
+
+# Display basic stats for the target variable
+if 'Price' in data.columns:
+    print(f"Mean Price: {data['Price'].mean()}")
+    print(f"Median Price: {data['Price'].median()}")
+    print(f"Highest Price: {data['Price'].max()}")
+    print(f"Lowest Price: {data['Price'].min()}")
+else:
+    print("The dataset does not contain the 'Price' column.")
+
+# Define features (X) and target (y)
+X = data[["Avg. Area Income", "Avg. Area House Age", "Avg. Area Number of Rooms", 
+          "Avg. Area Number of Bedrooms", "Area Population"]]
+y = data["Price"]
+
+# Normalize feature data for better neural network performance
+scaler = MinMaxScaler()
+X = scaler.fit_transform(X)  
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.10, random_state=42)
+
+# Building the neural network model
+model = Sequential([
+    Dense(128, activation='relu', input_shape=(X_train.shape[1],)),  # Input layer
+    Dense(64, activation='relu'),                                   # Hidden layer 1
+    Dense(32, activation='relu'),                                   # Hidden layer 2
+    Dense(1)                                                        # Output layer
+])
+
+# Compiling the model
+model.compile(optimizer=Adam(learning_rate=0.001), loss='mse', metrics=['mae'])
+
+# Training the model
+history = model.fit(X_train, y_train, validation_data=(X_test, y_test), 
+                    epochs=50, batch_size=32, verbose=1)
+
+# Evaluating the model
+loss, mae = model.evaluate(X_test, y_test)
+print("Mean Absolute Error on Test Set: ", mae)
+
+# User input for predictions
+print("Enter House Details to Predict Price")
+a = float(input("Avg. Area Income: "))
+b = float(input("Avg. Area House Age: "))
+c = float(input("Avg. Area Number of Rooms: "))
+d = float(input("Avg. Area Number of Bedrooms: "))
+e = float(input("Area Population: "))
+
+# Prepare input for prediction
+features = scaler.transform([[a, b, c, d, e]])  # Apply the same scaler used during training
+
+# Predicting the result
+predicted_price = model.predict(features)[0][0]
+print("Predicted House Price: ", predicted_price)
